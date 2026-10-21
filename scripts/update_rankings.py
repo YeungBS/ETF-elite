@@ -1,18 +1,22 @@
 import json
 import math
 import os
+import time
 from datetime import datetime, timezone
 
-import akshare as ak
-import pandas as pd
+import requests
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WATCHLIST = os.path.join(ROOT, "config", "watchlist.txt")
 OUTPUT = os.path.join(ROOT, "data", "results.json")
 
+API_URL = "https://api.ashareapi.com/v1/kline"
+REQUEST_INTERVAL = 31  # 免费匿名脚本限流：约每分钟2次
+HEADERS = {"User-Agent": "ETF-Elite/1.0"}
+
 
 def load_codes():
-    with open(WATCHLIST, "r", encoding="utf-8") as f:
+    with open(WATCHLIST, "r", encoding="utf-8-sig") as f:
         return [
             line.strip()
             for line in f
@@ -20,47 +24,88 @@ def load_codes():
         ]
 
 
+def market_code(code):
+    # 常见沪市ETF代码以5开头，深市ETF代码以15/16开头
+    if code.startswith(("5", "6", "9")):
+        return "sh" + code
+    return "sz" + code
+
+
 def get_history(code):
-    df = ak.fund_etf_hist_em(
-        symbol=code,
-        period="daily",
-        adjust="",
+    response = requests.get(
+        API_URL,
+        params={
+            "code": market_code(code),
+            "period": "day",
+            "count": "80",
+        },
+        headers=HEADERS,
+        timeout=25,
     )
-    if df is None or df.empty:
-        raise ValueError("行情源没有返回数据")
+    response.raise_for_status()
+    payload = response.json()
 
-    df = df.rename(columns={
-        "日期": "date",
-        "收盘": "close",
-    })
-    df["date"] = pd.to_datetime(df["date"])
-    df["close"] = pd.to_numeric(df["close"], errors="coerce")
-    df = df.dropna(subset=["close"]).sort_values("date")
-    if len(df) < 60:
-        raise ValueError("有效历史数据不足60个交易日")
-    return df
+    if not payload.get("ok") or not payload.get("data"):
+        raise ValueError(
+            "行情接口没有返回有效数据：" +
+            str(payload.get("message", payload.get("error", payload)))
+        )
+
+    rows = []
+    for item in payload["data"]:
+        date = item.get("date")
+        close = item.get("last", item.get("close"))
+        if date is None or close is None:
+            continue
+        try:
+            price = float(close)
+            if price > 0:
+                rows.append({"date": str(date), "close": price})
+        except (TypeError, ValueError):
+            continue
+
+    rows.sort(key=lambda x: x["date"])
+    if len(rows) < 60:
+        raise ValueError(f"有效日线不足60条：{len(rows)}条")
+
+    return rows
 
 
-def score_history(code, df):
-    close = df["close"]
-    last = float(close.iloc[-1])
+def score_history(code, rows):
+    closes = [x["close"] for x in rows]
+    last = closes[-1]
 
     def ret(days):
-        if len(close) <= days:
+        if len(closes) <= days:
             return None
-        return round((last / float(close.iloc[-days - 1]) - 1) * 100, 2)
+        return round((last / closes[-days - 1] - 1) * 100, 2)
 
-    ma20 = float(close.tail(20).mean())
-    ma60 = float(close.tail(60).mean())
-    returns = close.pct_change().dropna().tail(20)
-    vol = float(returns.std() * math.sqrt(252) * 100)
+    ma20 = sum(closes[-20:]) / 20
+    ma60 = sum(closes[-60:]) / 60
 
-    peak = close.tail(20).cummax()
-    drawdown = float(((close.tail(20) / peak) - 1).min() * 100)
+    daily_returns = [
+        closes[i] / closes[i - 1] - 1
+        for i in range(len(closes) - 20, len(closes))
+        if closes[i - 1] > 0
+    ]
 
-    r5 = ret(5)
-    r20 = ret(20)
-    r60 = ret(60)
+    if len(daily_returns) > 1:
+        avg = sum(daily_returns) / len(daily_returns)
+        variance = sum((x - avg) ** 2 for x in daily_returns) / (
+            len(daily_returns) - 1
+        )
+        vol = math.sqrt(variance) * math.sqrt(252) * 100
+    else:
+        vol = 0.0
+
+    recent = closes[-20:]
+    peak = recent[0]
+    drawdown = 0.0
+    for price in recent:
+        peak = max(peak, price)
+        drawdown = min(drawdown, (price / peak - 1) * 100)
+
+    r5, r20, r60 = ret(5), ret(20), ret(60)
 
     score = (
         (r20 or 0) * 0.35
@@ -81,7 +126,7 @@ def score_history(code, df):
 
     return {
         "code": code,
-        "date": df["date"].iloc[-1].strftime("%Y-%m-%d"),
+        "date": rows[-1]["date"],
         "close": round(last, 4),
         "return_5d_pct": r5,
         "return_20d_pct": r20,
@@ -98,42 +143,91 @@ def score_history(code, df):
 def main():
     results = []
     errors = []
+    codes = load_codes()
 
-    for code in load_codes():
+    if not codes:
+        raise RuntimeError("观察列表为空，请检查 config/watchlist.txt")
+
+    session = requests.Session()
+    session.headers.update(HEADERS)
+
+    for index, code in enumerate(codes):
+        if index > 0:
+            time.sleep(REQUEST_INTERVAL)
+
         try:
-            df = get_history(code)
-            results.append(score_history(code, df))
-            print(f"OK {code}: {results[-1]['date']}")
+            rows = get_history_with_session(session, code)
+            item = score_history(code, rows)
+            results.append(item)
+            print(f"OK {code}: {item['date']}")
         except Exception as exc:
             errors.append({"code": code, "error": str(exc)})
             print(f"FAILED {code}: {exc}")
 
-    results.sort(key=lambda x: x["score"], reverse=True)
-
     if not results:
         raise RuntimeError(
-            "所有ETF均获取失败，请检查行情源或watchlist；详情见前面的日志"
+            "所有ETF获取失败。请检查API响应、代码格式及免费额度。"
         )
 
-    for index, item in enumerate(results, start=1):
-        item["rank"] = index
+    results.sort(key=lambda x: x["score"], reverse=True)
+    for rank, item in enumerate(results, start=1):
+        item["rank"] = rank
 
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     payload = {
-        "status": "ok",
+        "status": "ok" if not errors else "partial",
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "data_date": max(item["date"] for item in results),
         "count": len(results),
         "rankings": results,
         "errors": errors,
+        "source": "A-Share Data API",
         "disclaimer": "参考指标和启发式评分，不构成投资建议。",
     }
 
     with open(OUTPUT, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
 
-    print(f"成功获取 {len(results)} 只ETF，失败 {len(errors)} 只。")
-    print(f"数据文件已写入: {OUTPUT}")
+    print(
+        f"完成：成功{len(results)}只，失败{len(errors)}只；"
+        f"最新行情日期：{payload['data_date']}"
+    )
+
+
+def get_history_with_session(session, code):
+    response = session.get(
+        API_URL,
+        params={
+            "code": market_code(code),
+            "period": "day",
+            "count": "80",
+        },
+        timeout=25,
+    )
+    response.raise_for_status()
+    payload = response.json()
+
+    if not payload.get("ok") or not payload.get("data"):
+        raise ValueError(
+            "行情接口无有效数据：" +
+            str(payload.get("message", payload.get("error", payload)))
+        )
+
+    rows = []
+    for item in payload["data"]:
+        date = item.get("date")
+        close = item.get("last", item.get("close"))
+        try:
+            price = float(close)
+            if date and price > 0:
+                rows.append({"date": str(date), "close": price})
+        except (TypeError, ValueError):
+            continue
+
+    rows.sort(key=lambda x: x["date"])
+    if len(rows) < 60:
+        raise ValueError(f"有效日线不足60条：{len(rows)}条")
+    return rows
 
 
 if __name__ == "__main__":
