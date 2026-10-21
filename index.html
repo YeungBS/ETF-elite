@@ -1,37 +1,1969 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#101827"><meta name="description" content="ETF菁英赛量化辅助工具"><link rel="manifest" href="manifest.json"><title>ETF Elite｜菁英交易助手</title>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="ETF Elite 菁英赛量化辅助工具">
+<title>ETF Elite｜菁英交易助手</title>
 <style>
-:root{--bg:#0b1220;--panel:#131e30;--text:#edf3ff;--muted:#8ea0bb;--blue:#5aa7ff;--green:#39d9a3;--red:#ff7285;--line:#26364d;--yellow:#ffd166}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:78px}header{padding:22px 18px 16px;background:linear-gradient(135deg,#172d4a,#101827);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}.brand{font-size:12px;letter-spacing:2px;color:var(--blue);font-weight:800}.title{font-size:24px;font-weight:800;margin-top:3px}.sub,.muted{font-size:12px;color:var(--muted)}.wrap{padding:14px;max-width:760px;margin:auto}.notice{border:1px solid #65512a;background:#302919;color:#ffe2a1;padding:11px 12px;border-radius:12px;font-size:12px;margin-bottom:14px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}.metric-label{font-size:12px;color:var(--muted)}.metric{font-size:23px;font-weight:800;margin-top:4px}.positive{color:var(--green)}.negative{color:var(--red)}.section-title{font-size:16px;font-weight:800;margin:20px 2px 10px;display:flex;justify-content:space-between;align-items:center}.tag,.pill{font-size:11px;padding:3px 7px;border-radius:8px;background:#203752;color:#9dccff}.tabs{position:fixed;bottom:0;left:0;right:0;background:#101827f2;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:9}.tabs button{border:0;background:none;color:var(--muted);font-size:11px;padding:4px 8px}.tabs button.active{color:var(--blue)}.tabs b{display:block;font-size:19px;font-weight:500}.primary,.secondary{cursor:pointer;border-radius:11px;padding:10px 12px;font-weight:700}.primary{background:var(--blue);color:#07111e;border:0}.secondary{background:#19263a;color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}.score{font-weight:800;color:var(--yellow)}.hidden{display:none!important}label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}input,select,textarea{width:100%;background:#0c1524;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:10px;font:inherit}textarea{min-height:110px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.empty{color:var(--muted);text-align:center;padding:22px 5px}.small{font-size:12px}.signal{padding:3px 6px;border-radius:7px;font-size:11px}.buy{background:#143c36;color:#75e6c1}.wait{background:#423820;color:#ffe0a0}.avoid{background:#442631;color:#ff9eac}
-</style></head><body>
-<header><div class="brand">ETF ELITE · PAPER TRADING</div><div class="title">菁英交易助手</div><div class="sub" id="updated">正在读取最新策略数据…</div></header>
+:root{
+  --bg:#0b1220;--panel:#131e30;--text:#edf3ff;
+  --muted:#8ea0bb;--blue:#5aa7ff;--green:#39d9a3;
+  --red:#ff7285;--line:#26364d;--yellow:#ffd166;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-bottom:85px
+}
+header{
+  padding:20px 16px 16px;
+  background:linear-gradient(135deg,#172d4a,#101827);
+  position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)
+}
+.brand{font-size:11px;letter-spacing:2px;color:var(--blue);font-weight:800}
+.title{font-size:24px;font-weight:800;margin-top:3px}
+.sub,.muted{font-size:12px;color:var(--muted)}
+.wrap{padding:13px;max-width:900px;margin:auto}
+.notice{
+  border:1px solid #65512a;background:#302919;color:#ffe2a1;
+  padding:11px;border-radius:12px;font-size:12px;margin-bottom:13px
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:15px;padding:13px;margin-bottom:12px;min-width:0
+}
+.metric-label{font-size:12px;color:var(--muted)}
+.metric{font-size:23px;font-weight:800;margin-top:3px;overflow-wrap:anywhere}
+.positive{color:var(--green)}.negative{color:var(--red)}
+.section-title{
+  font-size:16px;font-weight:800;margin:20px 2px 10px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px
+}
+.tag,.pill{
+  font-size:11px;padding:3px 7px;border-radius:7px;
+  background:#203752;color:#9dccff;white-space:nowrap
+}
+.tabs{
+  position:fixed;bottom:0;left:0;right:0;background:#101827f5;
+  border-top:1px solid var(--line);display:flex;justify-content:space-around;
+  padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:9
+}
+.tabs button{
+  border:0;background:none;color:var(--muted);font-size:11px;
+  padding:4px 8px;min-width:55px
+}
+.tabs button.active{color:var(--blue)}
+.tabs b{display:block;font-size:19px;font-weight:500}
+.primary,.secondary{
+  cursor:pointer;border-radius:10px;padding:10px 12px;
+  font-weight:700;font-size:13px
+}
+.primary{background:var(--blue);color:#07111e;border:0}
+.secondary{background:#19263a;color:var(--text);border:1px solid var(--line)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button:disabled{opacity:.45}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{
+  text-align:left;padding:10px 5px;border-bottom:1px solid var(--line);
+  vertical-align:top
+}
+th{color:var(--muted);font-weight:600;white-space:nowrap}
+.score{font-weight:800;color:var(--yellow)}
+.hidden{display:none!important}
+label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}
+input,select,textarea{
+  width:100%;background:#0c1524;border:1px solid var(--line);
+  color:var(--text);padding:10px;border-radius:9px;font:inherit
+}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;justify-content:space-between;gap:9px;align-items:center}
+.empty{color:var(--muted);text-align:center;padding:22px 5px}
+.small{font-size:12px}
+.signal{display:inline-block;padding:3px 6px;border-radius:7px;font-size:11px}
+.buy{background:#143c36;color:#75e6c1}
+.wait{background:#423820;color:#ffe0a0}
+.avoid{background:#442631;color:#ff9eac}
+.etf-name{font-size:13px;font-weight:800}
+.etf-code{font-size:11px;color:var(--muted);margin-top:2px}
+.etf-category{font-size:11px;color:#9dccff;margin-top:3px}
+.advice{font-size:11px;font-weight:700;line-height:1.5}
+.kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi-item{background:#0c1524;border-radius:9px;padding:9px}
+.kpi-value{font-size:14px;font-weight:700;margin-top:3px}
+.chart-note{font-size:11px;color:var(--muted);margin-top:9px}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .wrap{padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">ETF ELITE · PAPER TRADING</div>
+  <div class="title">菁英交易助手</div>
+  <div class="sub" id="updated">正在读取最新策略数据…</div>
+</header>
+
 <main class="wrap">
-<div class="notice">量化辅助工具，不是自动交易系统。信号基于每日历史行情，数据可能延迟或抓取失败；请核对东方财富比赛可交易清单。评分不保证收益，不会自动下单。</div>
-<section id="page-home">
-<div class="grid">
-<div class="card"><div class="metric-label">比赛模拟初始资金</div><div class="metric">¥1,000,000</div><div class="small muted">以比赛规则为准</div></div>
-<div class="card"><div class="metric-label">数据状态</div><div class="metric" id="dataStatus" style="font-size:18px">检查中</div><div class="small muted" id="dataDate">等待云端数据</div></div>
-<div class="card"><div class="metric-label">策略模式</div><div class="metric" style="font-size:18px">趋势 + 动量</div><div class="small muted">日线收盘后计算</div></div>
-<div class="card"><div class="metric-label">有效候选数</div><div class="metric" id="validCount">—</div><div class="small muted">仅统计成功取得数据的 ETF</div></div>
-</div>
-<div class="section-title">ETF 综合排名 <span class="tag">每日更新</span></div>
-<div class="card"><div id="rankTable" class="empty">正在读取 data/results.json…</div></div>
-<div class="section-title">策略说明</div><div class="card small muted">评分由中短期动量、均线趋势、相对宽基强度与波动风险组成。先用历史数据做观察和回测，不应直接视为买卖指令。遇到数据过期、数据不足或抓取失败时，程序应显示警告而非编造信号。</div>
-</section>
-<section id="page-signals" class="hidden"><div class="section-title">今日策略信号</div><div class="card" id="signalList"><div class="empty">等待数据…</div></div></section>
-<section id="page-portfolio" class="hidden"><div class="section-title">模拟持仓记录 <button class="primary" onclick="showTradeForm()">＋ 记录成交</button></div><div class="card"><div class="grid"><div><div class="metric-label">记录成交数</div><div class="metric" id="tradeCount">0</div></div><div><div class="metric-label">已记录 ETF 代码数</div><div class="metric" id="holdingCount">0</div></div></div><div id="holdings"><div class="empty">请记录你在东方财富比赛账户中实际完成的交易。</div></div></div>
-<div class="card hidden" id="tradeForm"><b>记录一笔成交</b><label>ETF 名称</label><input id="tradeName" placeholder="例如：沪深300ETF"><label>ETF 代码</label><input id="tradeCode" placeholder="例如：510300"><div class="grid"><div><label>方向</label><select id="tradeSide"><option value="BUY">买入</option><option value="SELL">卖出</option></select></div><div><label>成交价格（元）</label><input id="tradePrice" type="number" step="0.001"></div></div><div class="grid"><div><label>成交数量（份）</label><input id="tradeQty" type="number" step="100"></div><div><label>日期</label><input id="tradeDate" type="date"></div></div><div class="actions"><button class="primary" onclick="saveTrade()">保存记录</button><button class="secondary" onclick="hideTradeForm()">取消</button></div></div></section>
-<section id="page-settings" class="hidden"><div class="section-title">候选池设置</div><div class="card"><p class="small muted">每行填写一个 6 位 ETF 代码。保存后只在本手机浏览器本地生效；如需改变云端每日计算的候选池，需同步修改仓库中的 config/watchlist.txt。</p><label>本地候选池备忘</label><textarea id="codes" placeholder="510300&#10;510500&#10;159915"></textarea><div class="actions"><button class="primary" onclick="saveSettings()">保存到本机</button><button class="secondary" onclick="exportData()">导出本地记录</button><button class="secondary" onclick="location.reload()">重新加载数据</button></div></div><div class="card"><b>数据源与局限</b><p class="small muted">后端通过 Python AKShare 获取东方财富公开 ETF 日线历史数据。该类非官方封装可能因上游调整、限流或网络问题失败；工作流会保留上次成功结果并标记数据时间。云端计划任务不是实时行情，亦不连接比赛账户。</p></div></section>
-</main><nav class="tabs"><button class="active" data-page="home"><b>⌂</b>排名</button><button data-page="signals"><b>⌁</b>信号</button><button data-page="portfolio"><b>▤</b>持仓</button><button data-page="settings"><b>⚙</b>设置</button></nav>
+  <div class="notice">
+    本工具用于 ETF 比赛研究与模拟记录，不会自动下单。
+    买入建议由历史日线规则生成，不保证收益。请确认行情日期、比赛可交易清单和实际成交价格。
+  </div>
+
+  <section id="page-home">
+    <div class="grid">
+      <div class="card">
+        <div class="metric-label">比赛模拟初始资金</div>
+        <div class="metric">¥1,000,000</div>
+        <div class="small muted">以比赛规则为准</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">数据状态</div>
+        <div class="metric" id="dataStatus" style="font-size:17px">检查中</div>
+        <div class="small muted" id="dataDate">等待云端数据</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">有效候选数</div>
+        <div class="metric" id="validCount">—</div>
+        <div class="small muted">成功取得数据的 ETF</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">买入观察候选</div>
+        <div class="metric" id="buyCount">—</div>
+        <div class="small muted">符合本页积极信号规则</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      ETF 综合排名
+      <span class="tag">收盘后更新</span>
+    </div>
+    <div class="card">
+      <div class="row">
+        <span class="small muted">按后端综合评分排序</span>
+        <button class="secondary" onclick="loadResults()">刷新数据</button>
+      </div>
+      <div id="rankTable" class="empty">正在读取 data/results.json…</div>
+    </div>
+
+    <div class="section-title">买入建议说明</div>
+    <div class="card small">
+      <p><span class="signal buy">可以考虑买入</span> 中期趋势向上，20 日涨幅为正，且 5 日动量未转负。</p>
+      <p><span class="signal wait">观察，等待确认</span> 趋势条件不完整，或短期与中期走势出现分歧。</p>
+      <p><span class="signal avoid">暂不买入</span> 趋势偏弱，或 20 日跌幅达到设定的风险阈值。</p>
+      <p class="muted">这是启发式筛选规则，不是经过验证的盈利策略。极端行情、数据异常和流动性问题仍需人工判断。</p>
+    </div>
+  </section>
+
+  <section id="page-signals" class="hidden">
+    <div class="section-title">买入建议与风险观察</div>
+    <div class="card">
+      <div class="small muted">优先展示积极信号，其余候选按评分排序。建议结合成交量、流动性和比赛规则复核。</div>
+      <div id="signalList"><div class="empty">等待数据…</div></div>
+    </div>
+  </section>
+
+  <section id="page-portfolio" class="hidden">
+    <div class="section-title">
+      模拟持仓记录
+      <button class="primary" onclick="showTradeForm()">＋ 记录成交</button>
+    </div>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <div class="metric-label">记录成交数</div>
+          <div class="metric" id="tradeCount">0</div>
+        </div>
+        <div>
+          <div class="metric-label">记录 ETF 代码数</div>
+          <div class="metric" id="holdingCount">0</div>
+        </div>
+      </div>
+      <div id="holdings"><div class="empty">请记录比赛账户中实际完成的交易。</div></div>
+    </div>
+
+    <div class="card hidden" id="tradeForm">
+      <b>记录一笔成交</b>
+      <label>ETF 名称</label>
+      <input id="tradeName" placeholder="例如：沪深300ETF">
+      <label>ETF 代码</label>
+      <input id="tradeCode" inputmode="numeric" maxlength="6" placeholder="例如：510300">
+      <div class="grid">
+        <div>
+          <label>方向</label>
+          <select id="tradeSide">
+            <option value="BUY">买入</option>
+            <option value="SELL">卖出</option>
+          </select>
+        </div>
+        <div>
+          <label>成交价格（元）</label>
+          <input id="tradePrice" type="number" min="0" step="0.001">
+        </div>
+      </div>
+      <div class="grid">
+        <div>
+          <label>成交数量（份）</label>
+          <input id="tradeQty" type="number" min="1" step="100">
+        </div>
+        <div>
+          <label>日期</label>
+          <input id="tradeDate" type="date">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="saveTrade()">保存记录</button>
+        <button class="secondary" onclick="hideTradeForm()">取消</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-settings" class="hidden">
+    <div class="section-title">候选池设置</div>
+    <div class="card">
+      <p class="small muted">
+        本地候选池只保存在当前浏览器，不会自动修改云端观察列表。
+        要更改每日排名范围，还需修改仓库中的 config/watchlist.txt。
+      </p>
+      <label>本地候选池备忘（每行一个 6 位代码）</label>
+      <textarea id="codes" placeholder="510300&#10;510500&#10;159915"></textarea>
+      <div class="actions">
+        <button class="primary" onclick="saveSettings()">保存到本机</button>
+        <button class="secondary" onclick="exportData()">导出本地记录</button>
+        <button class="secondary" onclick="loadResults()">重新读取数据</button>
+      </div>
+    </div>
+    <div class="card">
+      <b>买入建议规则</b>
+      <p class="small muted">
+        积极信号：收盘价高于 MA20、MA20 高于 MA60、20 日涨幅为正、5 日涨幅不为负。
+      </p>
+      <p class="small muted">
+        风险信号：收盘价低于 MA20 且 MA20 低于 MA60，或者 20 日涨幅不高于 -8%。
+      </p>
+      <p class="small muted">
+        其余情况为观察信号。阈值仅用于初步筛选，尚未经过完整回测。
+      </p>
+    </div>
+    <div class="card">
+      <b>数据来源与局限</b>
+      <p class="small muted">
+        页面读取仓库中的 data/results.json。数据是否正确取决于后端接口、行情日期和计算逻辑。
+        GitHub Actions 显示成功不代表行情一定准确；如果行情过期、异常或不完整，请暂停参考买入建议。
+      </p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="active" data-page="home"><b>⌂</b>排名</button>
+  <button data-page="signals"><b>⌁</b>买入建议</button>
+  <button data-page="portfolio"><b>▤</b>持仓</button>
+  <button data-page="settings"><b>⚙</b>设置</button>
+</nav>
+
 <script>
-const $=id=>document.getElementById(id);let results=null;
-document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');['home','signals','portfolio','settings'].forEach(p=>$('page-'+p).classList.toggle('hidden',p!==b.dataset.page));}));
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-async function loadResults(){try{const r=await fetch('./data/results.json?ts='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);results=await r.json();renderResults()}catch(e){$('dataStatus').textContent='未接入';$('dataDate').textContent='请检查 Actions 是否成功';$('rankTable').innerHTML='<div class="empty">尚未读取到策略数据。请先运行 GitHub Actions 工作流。<br>'+esc(e.message)+'</div>';}}
-function renderResults(){const m=results.meta||{};$('updated').textContent='数据日期：'+(m.latest_date||'未知')+' · 更新时间：'+(m.generated_at||'未知')+'（北京时间）';$('dataStatus').textContent=m.status==='ok'?'已更新':(m.status||'待检查');$('dataDate').textContent=m.source||'AKShare / 东方财富历史日线';$('validCount').textContent=(results.rankings||[]).length;const arr=results.rankings||[];if(!arr.length){$('rankTable').innerHTML='<div class="empty">本次没有有效行情。请检查 Actions 日志，不要依据空数据交易。</div>';return} $('rankTable').innerHTML='<table><thead><tr><th>排名 / ETF</th><th>评分</th><th>5日</th><th>20日</th><th>趋势</th><th>提示</th></tr></thead><tbody>'+arr.map((x,i)=>`<tr><td><b>${i+1}. ${esc(x.name)}</b><br><span class="muted">${esc(x.code)} · ¥${Number(x.close).toFixed(3)}</span></td><td class="score">${x.score}</td><td class="${x.ret5>=0?'positive':'negative'}">${Number(x.ret5).toFixed(2)}%</td><td class="${x.ret20>=0?'positive':'negative'}">${Number(x.ret20).toFixed(2)}%</td><td>${esc(x.trend)}</td><td><span class="signal ${x.signal==='重点观察'?'buy':x.signal==='谨慎'?'avoid':'wait'}">${esc(x.signal)}</span></td></tr>`).join('')+'</tbody></table><p class="small muted">仅为规则评分排名，不代表预测收益或保证买入时机。数据日期以实际行情为准。</p>'; $('signalList').innerHTML=arr.slice(0,10).map((x,i)=>`<div style="padding:11px 0;border-bottom:1px solid #26364d"><div class="row"><b>${i+1}. ${esc(x.name)}（${esc(x.code)}）</b><span class="signal ${x.signal==='重点观察'?'buy':x.signal==='谨慎'?'avoid':'wait'}">${esc(x.signal)}</span></div><div class="small muted">评分 ${x.score} · 5日 ${Number(x.ret5).toFixed(2)}% · 20日 ${Number(x.ret20).toFixed(2)}% · 回撤 ${Number(x.drawdown20).toFixed(2)}%</div><div class="small muted">${esc(x.reason)}</div></div>`).join('')||'<div class="empty">暂无有效信号</div>';}
-let trades=JSON.parse(localStorage.getItem('etf_trades')||'[]');
-function showTradeForm(){$('tradeForm').classList.remove('hidden');$('tradeDate').value=new Date().toISOString().slice(0,10)}function hideTradeForm(){$('tradeForm').classList.add('hidden')}
-function saveTrade(){const t={name:$('tradeName').value.trim(),code:$('tradeCode').value.trim(),side:$('tradeSide').value,price:Number($('tradePrice').value),qty:Number($('tradeQty').value),date:$('tradeDate').value};if(!t.name||!t.code||!(t.price>0)||!(t.qty>0)||!t.date){alert('请完整填写名称、代码、价格、数量和日期');return}trades.push(t);localStorage.setItem('etf_trades',JSON.stringify(trades));hideTradeForm();renderTrades();['tradeName','tradeCode','tradePrice','tradeQty'].forEach(id=>$(id).value='')}
-function renderTrades(){$('tradeCount').textContent=trades.length;$('holdingCount').textContent=new Set(trades.map(t=>t.code)).size;const el=$('holdings');el.innerHTML=trades.length?trades.slice().reverse().map(t=>`<div style="padding:10px 0;border-bottom:1px solid #26364d"><div class="row"><b>${esc(t.name)} <span class="muted">${esc(t.code)}</span></b><span class="${t.side==='BUY'?'positive':'negative'}">${t.side==='BUY'?'买入':'卖出'}</span></div><div class="small muted">${esc(t.date)} · ${t.qty}份 × ¥${t.price}</div></div>`).join(''):'<div class="empty">还没有记录成交。</div>'}
-function saveSettings(){localStorage.setItem('etf_codes_local',$('codes').value);alert('已保存到本机。云端候选池需修改 GitHub 仓库 config/watchlist.txt。')}function exportData(){const data={trades,codes:$('codes').value,exportedAt:new Date().toISOString()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='etf-elite-records.json';a.click();URL.revokeObjectURL(a.href)}
-$('codes').value=localStorage.getItem('etf_codes_local')||'';renderTrades();loadResults();
-</script></body></html>
+const $ = id => document.getElementById(id);
+let results = null;
+
+const ETF_INFO = {
+  "512800": ["银行ETF", "银行板块"],
+  "513100": ["纳指100ETF", "美股大型成长股"],
+  "512690": ["酒ETF", "白酒板块"],
+  "512660": ["军工ETF", "国防军工"],
+  "159869": ["游戏ETF", "游戏产业"],
+  "510300": ["沪深300ETF", "大盘蓝筹"],
+  "512100": ["中证1000ETF", "中小盘股票"],
+  "515790": ["光伏ETF", "光伏产业链"],
+  "510500": ["中证500ETF", "中盘股票"],
+  "515030": ["新能源车ETF", "新能源汽车"],
+  "516160": ["新能源ETF", "新能源产业链"],
+  "512760": ["芯片ETF", "半导体芯片"],
+  "588000": ["科创50ETF", "科创板股票"],
+  "512480": ["半导体ETF", "半导体产业链"],
+  "159915": ["创业板ETF", "创业板成长股"]
+};
+
+document.querySelectorAll(".tabs button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    ["home", "signals", "portfolio", "settings"].forEach(page => {
+      $("page-" + page).classList.toggle("hidden", page !== button.dataset.page);
+    });
+  });
+});
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function num(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function fmt(value, digits = 2) {
+  const n = num(value);
+  return n === null ? "--" : n.toFixed(digits);
+}
+
+function pct(value) {
+  const n = num(value);
+  return n === null ? "--" : (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+}
+
+function price(value) {
+  const n = num(value);
+  return n === null ? "--" : "¥" + n.toFixed(3);
+}
+
+function pctClass(value) {
+  const n = num(value);
+  return n === null ? "" : n > 0 ? "positive" : n < 0 ? "negative" : "";
+}
+
+function getInfo(item) {
+  const mapped = ETF_INFO[String(item.code)] || [];
+  return {
+    name: item.name || mapped[0] || ("ETF " + item.code),
+    category: item.category || mapped[1] || "待分类"
+  };
+}
+
+/*
+ * 优先使用均线、收益率独立判断建议。
+ * 兼容后端原有“趋势偏强/震荡观察/趋势偏弱”字段。
+ */
+function getAdvice(item) {
+  const close = num(item.close);
+  const ma20 = num(item.ma20);
+  const ma60 = num(item.ma60);
+  const r5 = num(item.return_5d_pct ?? item.ret5);
+  const r20 = num(item.return_20d_pct ?? item.ret20);
+
+  if (close !== null && ma20 !== null && ma60 !== null &&
+      r5 !== null && r20 !== null) {
+    if (close > ma20 && ma20 > ma60 && r20 > 0 && r5 >= 0) {
+      return {
+        text: "可以考虑买入",
+        cls: "buy",
+        reason: "中期趋势向上，短期动量未转弱；仍需检查风险和流动性。"
+      };
+    }
+
+    if ((close < ma20 && ma20 < ma60) || r20 <= -8) {
+      return {
+        text: "暂不买入",
+        cls: "avoid",
+        reason: "趋势偏弱或近期回撤压力较大，避免仅因下跌而抄底。"
+      };
+    }
+
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "趋势条件尚不完整，等待走势进一步确认。"
+    };
+  }
+
+  const old = item.signal || "";
+  if (old === "趋势偏强") {
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "后端指标不完整，暂不生成积极买入建议。"
+    };
+  }
+
+  if (old === "趋势偏弱") {
+    return {
+      text: "暂不买入",
+      cls: "avoid",
+      reason: "后端提示趋势偏弱，请核对行情数据。"
+    };
+  }
+
+  return {
+    text: "观察，等待确认",
+    cls: "wait",
+    reason: "等待完整日线指标。"
+  };
+}
+
+function validateData(data) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.rankings)) {
+    throw new Error("JSON 格式不正确，未找到 rankings 数组");
+  }
+}
+
+async function loadResults() {
+  $("dataStatus").textContent = "读取中";
+  $("rankTable").innerHTML = '<div class="empty">正在读取云端数据…</div>';
+
+  try {
+    const response = await fetch("./data/results.json?ts=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    validateData(data);
+    results = data;
+    renderResults();
+  } catch (error) {
+    $("dataStatus").textContent = "读取失败";
+    $("dataDate").textContent = "请检查 data/results.json";
+    $("validCount").textContent = "—";
+    $("buyCount").textContent = "—";
+    $("updated").textContent = "暂时无法读取策略数据";
+    $("rankTable").innerHTML =
+      '<div class="empty">读取失败：' + esc(error.message) +
+      '<br>请检查 GitHub Pages 部署状态和 data/results.json 文件。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">数据不可用，暂不生成买入建议。</div>';
+  }
+}
+
+function renderResults() {
+  const data = results || {};
+  const arr = data.rankings || [];
+  const updatedRaw = data.updated_at || data.generated_at;
+  let updated = "未知";
+
+  if (updatedRaw) {
+    const date = new Date(updatedRaw);
+    if (!Number.isNaN(date.getTime())) {
+      updated = date.toLocaleString("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        hour12: false
+      });
+    }
+  }
+
+  $("updated").textContent =
+    "数据日期：" + (data.data_date || data.latest_date || "未知") +
+    " · 更新时间：" + updated + "（北京时间）";
+
+  $("dataStatus").textContent =
+    data.status === "ok" ? "已更新"
+    : data.status === "partial" ? "部分成功"
+    : (data.status || "待检查");
+
+  $("dataDate").textContent =
+    (data.source || "行情数据") +
+    (Array.isArray(data.errors) && data.errors.length
+      ? " · 失败 " + data.errors.length + " 只" : "");
+
+  $("validCount").textContent = arr.length;
+
+  const positiveCount = arr.filter(x => getAdvice(x).text === "可以考虑买入").length;
+  $("buyCount").textContent = positiveCount;
+
+  if (!arr.length) {
+    $("rankTable").innerHTML =
+      '<div class="empty">没有有效行情，请检查 GitHub Actions 日志。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">暂无有效信号。</div>';
+    return;
+  }
+
+  $("rankTable").innerHTML =
+    '<div style="overflow-x:auto"><table><thead><tr>' +
+    '<th>排名 / ETF</th><th>评分</th><th>5日</th><th>20日</th><th>买入建议</th>' +
+    '</tr></thead><tbody>' +
+
+    arr.map((item, index) => {
+      const info = getInfo(item);
+      const advice = getAdvice(item);
+      const score = num(item.score);
+
+      return `<tr>
+        <td>
+          <div class="etf-name">${index + 1}. ${esc(info.name)}</div>
+          <div class="etf-code">${esc(item.code)} · ${price(item.close)}</div>
+          <div class="etf-category">${esc(info.category)}</div>
+        </td>
+        <td class="score">${score === null ? "--" : score.toFixed(2)}</td>
+        <td class="${pctClass(item.return_5d_pct ?? item.ret5)}">
+          ${pct(item.return_5d_pct ?? item.ret5)}
+        </td>
+        <td class="${pctClass(item.return_20d_pct ?? item.ret20)}">
+          ${pct(item.return_20d_pct ?? item.ret20)}
+        </td>
+        <td><span class="signal ${advice.cls} advice">${advice.text}</span></td>
+      </tr>`;
+    }).join("") +
+
+    "</tbody></table></div>" +
+    '<p class="chart-note">按后端评分排序。买入建议为规则筛选，不代表预测收益或保证买入时机。</p>';
+
+  const sorted = arr.slice().sort((a, b) => {
+    const priority = {
+      "可以考虑买入": 0,
+      "观察，等待确认": 1,
+      "暂不买入": 2
+    };
+    const aa = getAdvice(a);
+    const bb = getAdvice(b);
+    return priority[aa.text] - priority[bb.text] ||
+      (num(b.score) ?? -Infinity) - (num(a.score) ?? -Infinity);
+  });
+
+  $("signalList").innerHTML = sorted.slice(0, 15).map((item, index) => {
+    const info = getInfo(item);
+    const advice = getAdvice(item);
+
+    return `<div style="padding:12px 0;border-bottom:1px solid #26364d">
+      <div class="row">
+        <b>${index + 1}. ${esc(info.name)}</b>
+        <span class="signal ${advice.cls}">${advice.text}</span>
+      </div>
+      <div class="etf-category">${esc(item.code)} · ${esc(info.category)} · ${price(item.close)}</div>
+      <div class="kpi" style="margin-top:9px">
+        <div class="kpi-item">
+          <div class="metric-label">综合评分</div>
+          <div class="kpi-value">${fmt(item.score)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日涨幅</div>
+          <div class="kpi-value ${pctClass(item.return_20d_pct)}">${pct(item.return_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日回撤</div>
+          <div class="kpi-value ${pctClass(item.drawdown_20d_pct)}">${pct(item.drawdown_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">年化波动</div>
+          <div class="kpi-value">${pct(item.annualized_volatility_pct)}</div>
+        </div>
+      </div>
+      <div class="small muted" style="margin-top:8px">${advice.reason}</div>
+    </div>`;
+  }).join("");
+}
+
+let trades = [];
+try {
+  trades = JSON.parse(localStorage.getItem("etf_trades") || "[]");
+  if (!Array.isArray(trades)) trades = [];
+} catch {
+  trades = [];
+}
+
+function showTradeForm() {
+  $("tradeForm").classList.remove("hidden");
+  $("tradeDate").value = new Date().toLocaleDateString("en-CA");
+}
+function hideTradeForm() {
+  $("tradeForm").classList.add("hidden");
+}
+
+function saveTrade() {
+  const trade = {
+    name: $("tradeName").value.trim(),
+    code: $("tradeCode").value.trim(),
+    side: $("tradeSide").value,
+    price: Number($("tradePrice").value),
+    qty: Number($("tradeQty").value),
+    date: $("tradeDate").value
+  };
+
+  if (!trade.name || !/^\d{6}$/.test(trade.code) ||
+      !(trade.price > 0) || !(trade.qty > 0) || !trade.date) {
+    alert("请完整填写名称、6位代码、有效价格、数量和日期。");
+    return;
+  }
+
+  trades.push(trade);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  hideTradeForm();
+  renderTrades();
+
+  ["tradeName", "tradeCode", "tradePrice", "tradeQty"].forEach(id => {
+    $(id).value = "";
+  });
+}
+
+function renderTrades() {
+  $("tradeCount").textContent = trades.length;
+  $("holdingCount").textContent = new Set(trades.map(t => t.code)).size;
+
+  $("holdings").innerHTML = trades.length
+    ? trades.slice().reverse().map((t, reverseIndex) => {
+        const originalIndex = trades.length - 1 - reverseIndex;
+        return `<div style="padding:10px 0;border-bottom:1px solid #26364d">
+          <div class="row">
+            <b>${esc(t.name)} <span class="muted">${esc(t.code)}</span></b>
+            <span class="${t.side === "BUY" ? "positive" : "negative"}">
+              ${t.side === "BUY" ? "买入" : "卖出"}
+            </span>
+          </div>
+          <div class="small muted">${esc(t.date)} · ${t.qty}份 × ${price(t.price)}</div>
+          <div class="actions">
+            <button class="secondary" onclick="deleteTrade(${originalIndex})">删除记录</button>
+          </div>
+        </div>`;
+      }).join("")
+    : '<div class="empty">还没有记录成交。</div>';
+}
+
+function deleteTrade(index) {
+  if (!confirm("确定删除这条本地模拟成交记录吗？")) return;
+  trades.splice(index, 1);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  renderTrades();
+}
+
+function saveSettings() {
+  localStorage.setItem("etf_codes_local", $("codes").value);
+  alert("已保存到本机。云端候选池仍需修改 config/watchlist.txt。");
+}
+
+function exportData() {
+  const data = {
+    trades,
+    codes: $("codes").value,
+    exportedAt: new Date().toISOString()
+  };
+
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json"
+    })
+  );
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "etf-elite-records.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$("codes").value = localStorage.getItem("etf_codes_local") || "";
+renderTrades();
+loadResults();
+</script>
+</body>
+</html><!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="ETF Elite 菁英赛量化辅助工具">
+<title>ETF Elite｜菁英交易助手</title>
+<style>
+:root{
+  --bg:#0b1220;--panel:#131e30;--text:#edf3ff;
+  --muted:#8ea0bb;--blue:#5aa7ff;--green:#39d9a3;
+  --red:#ff7285;--line:#26364d;--yellow:#ffd166;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-bottom:85px
+}
+header{
+  padding:20px 16px 16px;
+  background:linear-gradient(135deg,#172d4a,#101827);
+  position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)
+}
+.brand{font-size:11px;letter-spacing:2px;color:var(--blue);font-weight:800}
+.title{font-size:24px;font-weight:800;margin-top:3px}
+.sub,.muted{font-size:12px;color:var(--muted)}
+.wrap{padding:13px;max-width:900px;margin:auto}
+.notice{
+  border:1px solid #65512a;background:#302919;color:#ffe2a1;
+  padding:11px;border-radius:12px;font-size:12px;margin-bottom:13px
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:15px;padding:13px;margin-bottom:12px;min-width:0
+}
+.metric-label{font-size:12px;color:var(--muted)}
+.metric{font-size:23px;font-weight:800;margin-top:3px;overflow-wrap:anywhere}
+.positive{color:var(--green)}.negative{color:var(--red)}
+.section-title{
+  font-size:16px;font-weight:800;margin:20px 2px 10px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px
+}
+.tag,.pill{
+  font-size:11px;padding:3px 7px;border-radius:7px;
+  background:#203752;color:#9dccff;white-space:nowrap
+}
+.tabs{
+  position:fixed;bottom:0;left:0;right:0;background:#101827f5;
+  border-top:1px solid var(--line);display:flex;justify-content:space-around;
+  padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:9
+}
+.tabs button{
+  border:0;background:none;color:var(--muted);font-size:11px;
+  padding:4px 8px;min-width:55px
+}
+.tabs button.active{color:var(--blue)}
+.tabs b{display:block;font-size:19px;font-weight:500}
+.primary,.secondary{
+  cursor:pointer;border-radius:10px;padding:10px 12px;
+  font-weight:700;font-size:13px
+}
+.primary{background:var(--blue);color:#07111e;border:0}
+.secondary{background:#19263a;color:var(--text);border:1px solid var(--line)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button:disabled{opacity:.45}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{
+  text-align:left;padding:10px 5px;border-bottom:1px solid var(--line);
+  vertical-align:top
+}
+th{color:var(--muted);font-weight:600;white-space:nowrap}
+.score{font-weight:800;color:var(--yellow)}
+.hidden{display:none!important}
+label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}
+input,select,textarea{
+  width:100%;background:#0c1524;border:1px solid var(--line);
+  color:var(--text);padding:10px;border-radius:9px;font:inherit
+}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;justify-content:space-between;gap:9px;align-items:center}
+.empty{color:var(--muted);text-align:center;padding:22px 5px}
+.small{font-size:12px}
+.signal{display:inline-block;padding:3px 6px;border-radius:7px;font-size:11px}
+.buy{background:#143c36;color:#75e6c1}
+.wait{background:#423820;color:#ffe0a0}
+.avoid{background:#442631;color:#ff9eac}
+.etf-name{font-size:13px;font-weight:800}
+.etf-code{font-size:11px;color:var(--muted);margin-top:2px}
+.etf-category{font-size:11px;color:#9dccff;margin-top:3px}
+.advice{font-size:11px;font-weight:700;line-height:1.5}
+.kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi-item{background:#0c1524;border-radius:9px;padding:9px}
+.kpi-value{font-size:14px;font-weight:700;margin-top:3px}
+.chart-note{font-size:11px;color:var(--muted);margin-top:9px}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .wrap{padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">ETF ELITE · PAPER TRADING</div>
+  <div class="title">菁英交易助手</div>
+  <div class="sub" id="updated">正在读取最新策略数据…</div>
+</header>
+
+<main class="wrap">
+  <div class="notice">
+    本工具用于 ETF 比赛研究与模拟记录，不会自动下单。
+    买入建议由历史日线规则生成，不保证收益。请确认行情日期、比赛可交易清单和实际成交价格。
+  </div>
+
+  <section id="page-home">
+    <div class="grid">
+      <div class="card">
+        <div class="metric-label">比赛模拟初始资金</div>
+        <div class="metric">¥1,000,000</div>
+        <div class="small muted">以比赛规则为准</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">数据状态</div>
+        <div class="metric" id="dataStatus" style="font-size:17px">检查中</div>
+        <div class="small muted" id="dataDate">等待云端数据</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">有效候选数</div>
+        <div class="metric" id="validCount">—</div>
+        <div class="small muted">成功取得数据的 ETF</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">买入观察候选</div>
+        <div class="metric" id="buyCount">—</div>
+        <div class="small muted">符合本页积极信号规则</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      ETF 综合排名
+      <span class="tag">收盘后更新</span>
+    </div>
+    <div class="card">
+      <div class="row">
+        <span class="small muted">按后端综合评分排序</span>
+        <button class="secondary" onclick="loadResults()">刷新数据</button>
+      </div>
+      <div id="rankTable" class="empty">正在读取 data/results.json…</div>
+    </div>
+
+    <div class="section-title">买入建议说明</div>
+    <div class="card small">
+      <p><span class="signal buy">可以考虑买入</span> 中期趋势向上，20 日涨幅为正，且 5 日动量未转负。</p>
+      <p><span class="signal wait">观察，等待确认</span> 趋势条件不完整，或短期与中期走势出现分歧。</p>
+      <p><span class="signal avoid">暂不买入</span> 趋势偏弱，或 20 日跌幅达到设定的风险阈值。</p>
+      <p class="muted">这是启发式筛选规则，不是经过验证的盈利策略。极端行情、数据异常和流动性问题仍需人工判断。</p>
+    </div>
+  </section>
+
+  <section id="page-signals" class="hidden">
+    <div class="section-title">买入建议与风险观察</div>
+    <div class="card">
+      <div class="small muted">优先展示积极信号，其余候选按评分排序。建议结合成交量、流动性和比赛规则复核。</div>
+      <div id="signalList"><div class="empty">等待数据…</div></div>
+    </div>
+  </section>
+
+  <section id="page-portfolio" class="hidden">
+    <div class="section-title">
+      模拟持仓记录
+      <button class="primary" onclick="showTradeForm()">＋ 记录成交</button>
+    </div>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <div class="metric-label">记录成交数</div>
+          <div class="metric" id="tradeCount">0</div>
+        </div>
+        <div>
+          <div class="metric-label">记录 ETF 代码数</div>
+          <div class="metric" id="holdingCount">0</div>
+        </div>
+      </div>
+      <div id="holdings"><div class="empty">请记录比赛账户中实际完成的交易。</div></div>
+    </div>
+
+    <div class="card hidden" id="tradeForm">
+      <b>记录一笔成交</b>
+      <label>ETF 名称</label>
+      <input id="tradeName" placeholder="例如：沪深300ETF">
+      <label>ETF 代码</label>
+      <input id="tradeCode" inputmode="numeric" maxlength="6" placeholder="例如：510300">
+      <div class="grid">
+        <div>
+          <label>方向</label>
+          <select id="tradeSide">
+            <option value="BUY">买入</option>
+            <option value="SELL">卖出</option>
+          </select>
+        </div>
+        <div>
+          <label>成交价格（元）</label>
+          <input id="tradePrice" type="number" min="0" step="0.001">
+        </div>
+      </div>
+      <div class="grid">
+        <div>
+          <label>成交数量（份）</label>
+          <input id="tradeQty" type="number" min="1" step="100">
+        </div>
+        <div>
+          <label>日期</label>
+          <input id="tradeDate" type="date">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="saveTrade()">保存记录</button>
+        <button class="secondary" onclick="hideTradeForm()">取消</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-settings" class="hidden">
+    <div class="section-title">候选池设置</div>
+    <div class="card">
+      <p class="small muted">
+        本地候选池只保存在当前浏览器，不会自动修改云端观察列表。
+        要更改每日排名范围，还需修改仓库中的 config/watchlist.txt。
+      </p>
+      <label>本地候选池备忘（每行一个 6 位代码）</label>
+      <textarea id="codes" placeholder="510300&#10;510500&#10;159915"></textarea>
+      <div class="actions">
+        <button class="primary" onclick="saveSettings()">保存到本机</button>
+        <button class="secondary" onclick="exportData()">导出本地记录</button>
+        <button class="secondary" onclick="loadResults()">重新读取数据</button>
+      </div>
+    </div>
+    <div class="card">
+      <b>买入建议规则</b>
+      <p class="small muted">
+        积极信号：收盘价高于 MA20、MA20 高于 MA60、20 日涨幅为正、5 日涨幅不为负。
+      </p>
+      <p class="small muted">
+        风险信号：收盘价低于 MA20 且 MA20 低于 MA60，或者 20 日涨幅不高于 -8%。
+      </p>
+      <p class="small muted">
+        其余情况为观察信号。阈值仅用于初步筛选，尚未经过完整回测。
+      </p>
+    </div>
+    <div class="card">
+      <b>数据来源与局限</b>
+      <p class="small muted">
+        页面读取仓库中的 data/results.json。数据是否正确取决于后端接口、行情日期和计算逻辑。
+        GitHub Actions 显示成功不代表行情一定准确；如果行情过期、异常或不完整，请暂停参考买入建议。
+      </p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="active" data-page="home"><b>⌂</b>排名</button>
+  <button data-page="signals"><b>⌁</b>买入建议</button>
+  <button data-page="portfolio"><b>▤</b>持仓</button>
+  <button data-page="settings"><b>⚙</b>设置</button>
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+let results = null;
+
+const ETF_INFO = {
+  "512800": ["银行ETF", "银行板块"],
+  "513100": ["纳指100ETF", "美股大型成长股"],
+  "512690": ["酒ETF", "白酒板块"],
+  "512660": ["军工ETF", "国防军工"],
+  "159869": ["游戏ETF", "游戏产业"],
+  "510300": ["沪深300ETF", "大盘蓝筹"],
+  "512100": ["中证1000ETF", "中小盘股票"],
+  "515790": ["光伏ETF", "光伏产业链"],
+  "510500": ["中证500ETF", "中盘股票"],
+  "515030": ["新能源车ETF", "新能源汽车"],
+  "516160": ["新能源ETF", "新能源产业链"],
+  "512760": ["芯片ETF", "半导体芯片"],
+  "588000": ["科创50ETF", "科创板股票"],
+  "512480": ["半导体ETF", "半导体产业链"],
+  "159915": ["创业板ETF", "创业板成长股"]
+};
+
+document.querySelectorAll(".tabs button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    ["home", "signals", "portfolio", "settings"].forEach(page => {
+      $("page-" + page).classList.toggle("hidden", page !== button.dataset.page);
+    });
+  });
+});
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function num(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function fmt(value, digits = 2) {
+  const n = num(value);
+  return n === null ? "--" : n.toFixed(digits);
+}
+
+function pct(value) {
+  const n = num(value);
+  return n === null ? "--" : (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+}
+
+function price(value) {
+  const n = num(value);
+  return n === null ? "--" : "¥" + n.toFixed(3);
+}
+
+function pctClass(value) {
+  const n = num(value);
+  return n === null ? "" : n > 0 ? "positive" : n < 0 ? "negative" : "";
+}
+
+function getInfo(item) {
+  const mapped = ETF_INFO[String(item.code)] || [];
+  return {
+    name: item.name || mapped[0] || ("ETF " + item.code),
+    category: item.category || mapped[1] || "待分类"
+  };
+}
+
+/*
+ * 优先使用均线、收益率独立判断建议。
+ * 兼容后端原有“趋势偏强/震荡观察/趋势偏弱”字段。
+ */
+function getAdvice(item) {
+  const close = num(item.close);
+  const ma20 = num(item.ma20);
+  const ma60 = num(item.ma60);
+  const r5 = num(item.return_5d_pct ?? item.ret5);
+  const r20 = num(item.return_20d_pct ?? item.ret20);
+
+  if (close !== null && ma20 !== null && ma60 !== null &&
+      r5 !== null && r20 !== null) {
+    if (close > ma20 && ma20 > ma60 && r20 > 0 && r5 >= 0) {
+      return {
+        text: "可以考虑买入",
+        cls: "buy",
+        reason: "中期趋势向上，短期动量未转弱；仍需检查风险和流动性。"
+      };
+    }
+
+    if ((close < ma20 && ma20 < ma60) || r20 <= -8) {
+      return {
+        text: "暂不买入",
+        cls: "avoid",
+        reason: "趋势偏弱或近期回撤压力较大，避免仅因下跌而抄底。"
+      };
+    }
+
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "趋势条件尚不完整，等待走势进一步确认。"
+    };
+  }
+
+  const old = item.signal || "";
+  if (old === "趋势偏强") {
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "后端指标不完整，暂不生成积极买入建议。"
+    };
+  }
+
+  if (old === "趋势偏弱") {
+    return {
+      text: "暂不买入",
+      cls: "avoid",
+      reason: "后端提示趋势偏弱，请核对行情数据。"
+    };
+  }
+
+  return {
+    text: "观察，等待确认",
+    cls: "wait",
+    reason: "等待完整日线指标。"
+  };
+}
+
+function validateData(data) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.rankings)) {
+    throw new Error("JSON 格式不正确，未找到 rankings 数组");
+  }
+}
+
+async function loadResults() {
+  $("dataStatus").textContent = "读取中";
+  $("rankTable").innerHTML = '<div class="empty">正在读取云端数据…</div>';
+
+  try {
+    const response = await fetch("./data/results.json?ts=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    validateData(data);
+    results = data;
+    renderResults();
+  } catch (error) {
+    $("dataStatus").textContent = "读取失败";
+    $("dataDate").textContent = "请检查 data/results.json";
+    $("validCount").textContent = "—";
+    $("buyCount").textContent = "—";
+    $("updated").textContent = "暂时无法读取策略数据";
+    $("rankTable").innerHTML =
+      '<div class="empty">读取失败：' + esc(error.message) +
+      '<br>请检查 GitHub Pages 部署状态和 data/results.json 文件。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">数据不可用，暂不生成买入建议。</div>';
+  }
+}
+
+function renderResults() {
+  const data = results || {};
+  const arr = data.rankings || [];
+  const updatedRaw = data.updated_at || data.generated_at;
+  let updated = "未知";
+
+  if (updatedRaw) {
+    const date = new Date(updatedRaw);
+    if (!Number.isNaN(date.getTime())) {
+      updated = date.toLocaleString("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        hour12: false
+      });
+    }
+  }
+
+  $("updated").textContent =
+    "数据日期：" + (data.data_date || data.latest_date || "未知") +
+    " · 更新时间：" + updated + "（北京时间）";
+
+  $("dataStatus").textContent =
+    data.status === "ok" ? "已更新"
+    : data.status === "partial" ? "部分成功"
+    : (data.status || "待检查");
+
+  $("dataDate").textContent =
+    (data.source || "行情数据") +
+    (Array.isArray(data.errors) && data.errors.length
+      ? " · 失败 " + data.errors.length + " 只" : "");
+
+  $("validCount").textContent = arr.length;
+
+  const positiveCount = arr.filter(x => getAdvice(x).text === "可以考虑买入").length;
+  $("buyCount").textContent = positiveCount;
+
+  if (!arr.length) {
+    $("rankTable").innerHTML =
+      '<div class="empty">没有有效行情，请检查 GitHub Actions 日志。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">暂无有效信号。</div>';
+    return;
+  }
+
+  $("rankTable").innerHTML =
+    '<div style="overflow-x:auto"><table><thead><tr>' +
+    '<th>排名 / ETF</th><th>评分</th><th>5日</th><th>20日</th><th>买入建议</th>' +
+    '</tr></thead><tbody>' +
+
+    arr.map((item, index) => {
+      const info = getInfo(item);
+      const advice = getAdvice(item);
+      const score = num(item.score);
+
+      return `<tr>
+        <td>
+          <div class="etf-name">${index + 1}. ${esc(info.name)}</div>
+          <div class="etf-code">${esc(item.code)} · ${price(item.close)}</div>
+          <div class="etf-category">${esc(info.category)}</div>
+        </td>
+        <td class="score">${score === null ? "--" : score.toFixed(2)}</td>
+        <td class="${pctClass(item.return_5d_pct ?? item.ret5)}">
+          ${pct(item.return_5d_pct ?? item.ret5)}
+        </td>
+        <td class="${pctClass(item.return_20d_pct ?? item.ret20)}">
+          ${pct(item.return_20d_pct ?? item.ret20)}
+        </td>
+        <td><span class="signal ${advice.cls} advice">${advice.text}</span></td>
+      </tr>`;
+    }).join("") +
+
+    "</tbody></table></div>" +
+    '<p class="chart-note">按后端评分排序。买入建议为规则筛选，不代表预测收益或保证买入时机。</p>';
+
+  const sorted = arr.slice().sort((a, b) => {
+    const priority = {
+      "可以考虑买入": 0,
+      "观察，等待确认": 1,
+      "暂不买入": 2
+    };
+    const aa = getAdvice(a);
+    const bb = getAdvice(b);
+    return priority[aa.text] - priority[bb.text] ||
+      (num(b.score) ?? -Infinity) - (num(a.score) ?? -Infinity);
+  });
+
+  $("signalList").innerHTML = sorted.slice(0, 15).map((item, index) => {
+    const info = getInfo(item);
+    const advice = getAdvice(item);
+
+    return `<div style="padding:12px 0;border-bottom:1px solid #26364d">
+      <div class="row">
+        <b>${index + 1}. ${esc(info.name)}</b>
+        <span class="signal ${advice.cls}">${advice.text}</span>
+      </div>
+      <div class="etf-category">${esc(item.code)} · ${esc(info.category)} · ${price(item.close)}</div>
+      <div class="kpi" style="margin-top:9px">
+        <div class="kpi-item">
+          <div class="metric-label">综合评分</div>
+          <div class="kpi-value">${fmt(item.score)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日涨幅</div>
+          <div class="kpi-value ${pctClass(item.return_20d_pct)}">${pct(item.return_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日回撤</div>
+          <div class="kpi-value ${pctClass(item.drawdown_20d_pct)}">${pct(item.drawdown_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">年化波动</div>
+          <div class="kpi-value">${pct(item.annualized_volatility_pct)}</div>
+        </div>
+      </div>
+      <div class="small muted" style="margin-top:8px">${advice.reason}</div>
+    </div>`;
+  }).join("");
+}
+
+let trades = [];
+try {
+  trades = JSON.parse(localStorage.getItem("etf_trades") || "[]");
+  if (!Array.isArray(trades)) trades = [];
+} catch {
+  trades = [];
+}
+
+function showTradeForm() {
+  $("tradeForm").classList.remove("hidden");
+  $("tradeDate").value = new Date().toLocaleDateString("en-CA");
+}
+function hideTradeForm() {
+  $("tradeForm").classList.add("hidden");
+}
+
+function saveTrade() {
+  const trade = {
+    name: $("tradeName").value.trim(),
+    code: $("tradeCode").value.trim(),
+    side: $("tradeSide").value,
+    price: Number($("tradePrice").value),
+    qty: Number($("tradeQty").value),
+    date: $("tradeDate").value
+  };
+
+  if (!trade.name || !/^\d{6}$/.test(trade.code) ||
+      !(trade.price > 0) || !(trade.qty > 0) || !trade.date) {
+    alert("请完整填写名称、6位代码、有效价格、数量和日期。");
+    return;
+  }
+
+  trades.push(trade);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  hideTradeForm();
+  renderTrades();
+
+  ["tradeName", "tradeCode", "tradePrice", "tradeQty"].forEach(id => {
+    $(id).value = "";
+  });
+}
+
+function renderTrades() {
+  $("tradeCount").textContent = trades.length;
+  $("holdingCount").textContent = new Set(trades.map(t => t.code)).size;
+
+  $("holdings").innerHTML = trades.length
+    ? trades.slice().reverse().map((t, reverseIndex) => {
+        const originalIndex = trades.length - 1 - reverseIndex;
+        return `<div style="padding:10px 0;border-bottom:1px solid #26364d">
+          <div class="row">
+            <b>${esc(t.name)} <span class="muted">${esc(t.code)}</span></b>
+            <span class="${t.side === "BUY" ? "positive" : "negative"}">
+              ${t.side === "BUY" ? "买入" : "卖出"}
+            </span>
+          </div>
+          <div class="small muted">${esc(t.date)} · ${t.qty}份 × ${price(t.price)}</div>
+          <div class="actions">
+            <button class="secondary" onclick="deleteTrade(${originalIndex})">删除记录</button>
+          </div>
+        </div>`;
+      }).join("")
+    : '<div class="empty">还没有记录成交。</div>';
+}
+
+function deleteTrade(index) {
+  if (!confirm("确定删除这条本地模拟成交记录吗？")) return;
+  trades.splice(index, 1);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  renderTrades();
+}
+
+function saveSettings() {
+  localStorage.setItem("etf_codes_local", $("codes").value);
+  alert("已保存到本机。云端候选池仍需修改 config/watchlist.txt。");
+}
+
+function exportData() {
+  const data = {
+    trades,
+    codes: $("codes").value,
+    exportedAt: new Date().toISOString()
+  };
+
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json"
+    })
+  );
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "etf-elite-records.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$("codes").value = localStorage.getItem("etf_codes_local") || "";
+renderTrades();
+loadResults();
+</script>
+</body>
+</html><!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="ETF Elite 菁英赛量化辅助工具">
+<title>ETF Elite｜菁英交易助手</title>
+<style>
+:root{
+  --bg:#0b1220;--panel:#131e30;--text:#edf3ff;
+  --muted:#8ea0bb;--blue:#5aa7ff;--green:#39d9a3;
+  --red:#ff7285;--line:#26364d;--yellow:#ffd166;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-bottom:85px
+}
+header{
+  padding:20px 16px 16px;
+  background:linear-gradient(135deg,#172d4a,#101827);
+  position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)
+}
+.brand{font-size:11px;letter-spacing:2px;color:var(--blue);font-weight:800}
+.title{font-size:24px;font-weight:800;margin-top:3px}
+.sub,.muted{font-size:12px;color:var(--muted)}
+.wrap{padding:13px;max-width:900px;margin:auto}
+.notice{
+  border:1px solid #65512a;background:#302919;color:#ffe2a1;
+  padding:11px;border-radius:12px;font-size:12px;margin-bottom:13px
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:15px;padding:13px;margin-bottom:12px;min-width:0
+}
+.metric-label{font-size:12px;color:var(--muted)}
+.metric{font-size:23px;font-weight:800;margin-top:3px;overflow-wrap:anywhere}
+.positive{color:var(--green)}.negative{color:var(--red)}
+.section-title{
+  font-size:16px;font-weight:800;margin:20px 2px 10px;
+  display:flex;justify-content:space-between;align-items:center;gap:8px
+}
+.tag,.pill{
+  font-size:11px;padding:3px 7px;border-radius:7px;
+  background:#203752;color:#9dccff;white-space:nowrap
+}
+.tabs{
+  position:fixed;bottom:0;left:0;right:0;background:#101827f5;
+  border-top:1px solid var(--line);display:flex;justify-content:space-around;
+  padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:9
+}
+.tabs button{
+  border:0;background:none;color:var(--muted);font-size:11px;
+  padding:4px 8px;min-width:55px
+}
+.tabs button.active{color:var(--blue)}
+.tabs b{display:block;font-size:19px;font-weight:500}
+.primary,.secondary{
+  cursor:pointer;border-radius:10px;padding:10px 12px;
+  font-weight:700;font-size:13px
+}
+.primary{background:var(--blue);color:#07111e;border:0}
+.secondary{background:#19263a;color:var(--text);border:1px solid var(--line)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button:disabled{opacity:.45}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{
+  text-align:left;padding:10px 5px;border-bottom:1px solid var(--line);
+  vertical-align:top
+}
+th{color:var(--muted);font-weight:600;white-space:nowrap}
+.score{font-weight:800;color:var(--yellow)}
+.hidden{display:none!important}
+label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}
+input,select,textarea{
+  width:100%;background:#0c1524;border:1px solid var(--line);
+  color:var(--text);padding:10px;border-radius:9px;font:inherit
+}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;justify-content:space-between;gap:9px;align-items:center}
+.empty{color:var(--muted);text-align:center;padding:22px 5px}
+.small{font-size:12px}
+.signal{display:inline-block;padding:3px 6px;border-radius:7px;font-size:11px}
+.buy{background:#143c36;color:#75e6c1}
+.wait{background:#423820;color:#ffe0a0}
+.avoid{background:#442631;color:#ff9eac}
+.etf-name{font-size:13px;font-weight:800}
+.etf-code{font-size:11px;color:var(--muted);margin-top:2px}
+.etf-category{font-size:11px;color:#9dccff;margin-top:3px}
+.advice{font-size:11px;font-weight:700;line-height:1.5}
+.kpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpi-item{background:#0c1524;border-radius:9px;padding:9px}
+.kpi-value{font-size:14px;font-weight:700;margin-top:3px}
+.chart-note{font-size:11px;color:var(--muted);margin-top:9px}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .wrap{padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">ETF ELITE · PAPER TRADING</div>
+  <div class="title">菁英交易助手</div>
+  <div class="sub" id="updated">正在读取最新策略数据…</div>
+</header>
+
+<main class="wrap">
+  <div class="notice">
+    本工具用于 ETF 比赛研究与模拟记录，不会自动下单。
+    买入建议由历史日线规则生成，不保证收益。请确认行情日期、比赛可交易清单和实际成交价格。
+  </div>
+
+  <section id="page-home">
+    <div class="grid">
+      <div class="card">
+        <div class="metric-label">比赛模拟初始资金</div>
+        <div class="metric">¥1,000,000</div>
+        <div class="small muted">以比赛规则为准</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">数据状态</div>
+        <div class="metric" id="dataStatus" style="font-size:17px">检查中</div>
+        <div class="small muted" id="dataDate">等待云端数据</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">有效候选数</div>
+        <div class="metric" id="validCount">—</div>
+        <div class="small muted">成功取得数据的 ETF</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">买入观察候选</div>
+        <div class="metric" id="buyCount">—</div>
+        <div class="small muted">符合本页积极信号规则</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      ETF 综合排名
+      <span class="tag">收盘后更新</span>
+    </div>
+    <div class="card">
+      <div class="row">
+        <span class="small muted">按后端综合评分排序</span>
+        <button class="secondary" onclick="loadResults()">刷新数据</button>
+      </div>
+      <div id="rankTable" class="empty">正在读取 data/results.json…</div>
+    </div>
+
+    <div class="section-title">买入建议说明</div>
+    <div class="card small">
+      <p><span class="signal buy">可以考虑买入</span> 中期趋势向上，20 日涨幅为正，且 5 日动量未转负。</p>
+      <p><span class="signal wait">观察，等待确认</span> 趋势条件不完整，或短期与中期走势出现分歧。</p>
+      <p><span class="signal avoid">暂不买入</span> 趋势偏弱，或 20 日跌幅达到设定的风险阈值。</p>
+      <p class="muted">这是启发式筛选规则，不是经过验证的盈利策略。极端行情、数据异常和流动性问题仍需人工判断。</p>
+    </div>
+  </section>
+
+  <section id="page-signals" class="hidden">
+    <div class="section-title">买入建议与风险观察</div>
+    <div class="card">
+      <div class="small muted">优先展示积极信号，其余候选按评分排序。建议结合成交量、流动性和比赛规则复核。</div>
+      <div id="signalList"><div class="empty">等待数据…</div></div>
+    </div>
+  </section>
+
+  <section id="page-portfolio" class="hidden">
+    <div class="section-title">
+      模拟持仓记录
+      <button class="primary" onclick="showTradeForm()">＋ 记录成交</button>
+    </div>
+    <div class="card">
+      <div class="grid">
+        <div>
+          <div class="metric-label">记录成交数</div>
+          <div class="metric" id="tradeCount">0</div>
+        </div>
+        <div>
+          <div class="metric-label">记录 ETF 代码数</div>
+          <div class="metric" id="holdingCount">0</div>
+        </div>
+      </div>
+      <div id="holdings"><div class="empty">请记录比赛账户中实际完成的交易。</div></div>
+    </div>
+
+    <div class="card hidden" id="tradeForm">
+      <b>记录一笔成交</b>
+      <label>ETF 名称</label>
+      <input id="tradeName" placeholder="例如：沪深300ETF">
+      <label>ETF 代码</label>
+      <input id="tradeCode" inputmode="numeric" maxlength="6" placeholder="例如：510300">
+      <div class="grid">
+        <div>
+          <label>方向</label>
+          <select id="tradeSide">
+            <option value="BUY">买入</option>
+            <option value="SELL">卖出</option>
+          </select>
+        </div>
+        <div>
+          <label>成交价格（元）</label>
+          <input id="tradePrice" type="number" min="0" step="0.001">
+        </div>
+      </div>
+      <div class="grid">
+        <div>
+          <label>成交数量（份）</label>
+          <input id="tradeQty" type="number" min="1" step="100">
+        </div>
+        <div>
+          <label>日期</label>
+          <input id="tradeDate" type="date">
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="saveTrade()">保存记录</button>
+        <button class="secondary" onclick="hideTradeForm()">取消</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-settings" class="hidden">
+    <div class="section-title">候选池设置</div>
+    <div class="card">
+      <p class="small muted">
+        本地候选池只保存在当前浏览器，不会自动修改云端观察列表。
+        要更改每日排名范围，还需修改仓库中的 config/watchlist.txt。
+      </p>
+      <label>本地候选池备忘（每行一个 6 位代码）</label>
+      <textarea id="codes" placeholder="510300&#10;510500&#10;159915"></textarea>
+      <div class="actions">
+        <button class="primary" onclick="saveSettings()">保存到本机</button>
+        <button class="secondary" onclick="exportData()">导出本地记录</button>
+        <button class="secondary" onclick="loadResults()">重新读取数据</button>
+      </div>
+    </div>
+    <div class="card">
+      <b>买入建议规则</b>
+      <p class="small muted">
+        积极信号：收盘价高于 MA20、MA20 高于 MA60、20 日涨幅为正、5 日涨幅不为负。
+      </p>
+      <p class="small muted">
+        风险信号：收盘价低于 MA20 且 MA20 低于 MA60，或者 20 日涨幅不高于 -8%。
+      </p>
+      <p class="small muted">
+        其余情况为观察信号。阈值仅用于初步筛选，尚未经过完整回测。
+      </p>
+    </div>
+    <div class="card">
+      <b>数据来源与局限</b>
+      <p class="small muted">
+        页面读取仓库中的 data/results.json。数据是否正确取决于后端接口、行情日期和计算逻辑。
+        GitHub Actions 显示成功不代表行情一定准确；如果行情过期、异常或不完整，请暂停参考买入建议。
+      </p>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button class="active" data-page="home"><b>⌂</b>排名</button>
+  <button data-page="signals"><b>⌁</b>买入建议</button>
+  <button data-page="portfolio"><b>▤</b>持仓</button>
+  <button data-page="settings"><b>⚙</b>设置</button>
+</nav>
+
+<script>
+const $ = id => document.getElementById(id);
+let results = null;
+
+const ETF_INFO = {
+  "512800": ["银行ETF", "银行板块"],
+  "513100": ["纳指100ETF", "美股大型成长股"],
+  "512690": ["酒ETF", "白酒板块"],
+  "512660": ["军工ETF", "国防军工"],
+  "159869": ["游戏ETF", "游戏产业"],
+  "510300": ["沪深300ETF", "大盘蓝筹"],
+  "512100": ["中证1000ETF", "中小盘股票"],
+  "515790": ["光伏ETF", "光伏产业链"],
+  "510500": ["中证500ETF", "中盘股票"],
+  "515030": ["新能源车ETF", "新能源汽车"],
+  "516160": ["新能源ETF", "新能源产业链"],
+  "512760": ["芯片ETF", "半导体芯片"],
+  "588000": ["科创50ETF", "科创板股票"],
+  "512480": ["半导体ETF", "半导体产业链"],
+  "159915": ["创业板ETF", "创业板成长股"]
+};
+
+document.querySelectorAll(".tabs button").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    ["home", "signals", "portfolio", "settings"].forEach(page => {
+      $("page-" + page).classList.toggle("hidden", page !== button.dataset.page);
+    });
+  });
+});
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+function num(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function fmt(value, digits = 2) {
+  const n = num(value);
+  return n === null ? "--" : n.toFixed(digits);
+}
+
+function pct(value) {
+  const n = num(value);
+  return n === null ? "--" : (n > 0 ? "+" : "") + n.toFixed(2) + "%";
+}
+
+function price(value) {
+  const n = num(value);
+  return n === null ? "--" : "¥" + n.toFixed(3);
+}
+
+function pctClass(value) {
+  const n = num(value);
+  return n === null ? "" : n > 0 ? "positive" : n < 0 ? "negative" : "";
+}
+
+function getInfo(item) {
+  const mapped = ETF_INFO[String(item.code)] || [];
+  return {
+    name: item.name || mapped[0] || ("ETF " + item.code),
+    category: item.category || mapped[1] || "待分类"
+  };
+}
+
+/*
+ * 优先使用均线、收益率独立判断建议。
+ * 兼容后端原有“趋势偏强/震荡观察/趋势偏弱”字段。
+ */
+function getAdvice(item) {
+  const close = num(item.close);
+  const ma20 = num(item.ma20);
+  const ma60 = num(item.ma60);
+  const r5 = num(item.return_5d_pct ?? item.ret5);
+  const r20 = num(item.return_20d_pct ?? item.ret20);
+
+  if (close !== null && ma20 !== null && ma60 !== null &&
+      r5 !== null && r20 !== null) {
+    if (close > ma20 && ma20 > ma60 && r20 > 0 && r5 >= 0) {
+      return {
+        text: "可以考虑买入",
+        cls: "buy",
+        reason: "中期趋势向上，短期动量未转弱；仍需检查风险和流动性。"
+      };
+    }
+
+    if ((close < ma20 && ma20 < ma60) || r20 <= -8) {
+      return {
+        text: "暂不买入",
+        cls: "avoid",
+        reason: "趋势偏弱或近期回撤压力较大，避免仅因下跌而抄底。"
+      };
+    }
+
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "趋势条件尚不完整，等待走势进一步确认。"
+    };
+  }
+
+  const old = item.signal || "";
+  if (old === "趋势偏强") {
+    return {
+      text: "观察，等待确认",
+      cls: "wait",
+      reason: "后端指标不完整，暂不生成积极买入建议。"
+    };
+  }
+
+  if (old === "趋势偏弱") {
+    return {
+      text: "暂不买入",
+      cls: "avoid",
+      reason: "后端提示趋势偏弱，请核对行情数据。"
+    };
+  }
+
+  return {
+    text: "观察，等待确认",
+    cls: "wait",
+    reason: "等待完整日线指标。"
+  };
+}
+
+function validateData(data) {
+  if (!data || typeof data !== "object" || !Array.isArray(data.rankings)) {
+    throw new Error("JSON 格式不正确，未找到 rankings 数组");
+  }
+}
+
+async function loadResults() {
+  $("dataStatus").textContent = "读取中";
+  $("rankTable").innerHTML = '<div class="empty">正在读取云端数据…</div>';
+
+  try {
+    const response = await fetch("./data/results.json?ts=" + Date.now(), {
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    validateData(data);
+    results = data;
+    renderResults();
+  } catch (error) {
+    $("dataStatus").textContent = "读取失败";
+    $("dataDate").textContent = "请检查 data/results.json";
+    $("validCount").textContent = "—";
+    $("buyCount").textContent = "—";
+    $("updated").textContent = "暂时无法读取策略数据";
+    $("rankTable").innerHTML =
+      '<div class="empty">读取失败：' + esc(error.message) +
+      '<br>请检查 GitHub Pages 部署状态和 data/results.json 文件。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">数据不可用，暂不生成买入建议。</div>';
+  }
+}
+
+function renderResults() {
+  const data = results || {};
+  const arr = data.rankings || [];
+  const updatedRaw = data.updated_at || data.generated_at;
+  let updated = "未知";
+
+  if (updatedRaw) {
+    const date = new Date(updatedRaw);
+    if (!Number.isNaN(date.getTime())) {
+      updated = date.toLocaleString("zh-CN", {
+        timeZone: "Asia/Shanghai",
+        hour12: false
+      });
+    }
+  }
+
+  $("updated").textContent =
+    "数据日期：" + (data.data_date || data.latest_date || "未知") +
+    " · 更新时间：" + updated + "（北京时间）";
+
+  $("dataStatus").textContent =
+    data.status === "ok" ? "已更新"
+    : data.status === "partial" ? "部分成功"
+    : (data.status || "待检查");
+
+  $("dataDate").textContent =
+    (data.source || "行情数据") +
+    (Array.isArray(data.errors) && data.errors.length
+      ? " · 失败 " + data.errors.length + " 只" : "");
+
+  $("validCount").textContent = arr.length;
+
+  const positiveCount = arr.filter(x => getAdvice(x).text === "可以考虑买入").length;
+  $("buyCount").textContent = positiveCount;
+
+  if (!arr.length) {
+    $("rankTable").innerHTML =
+      '<div class="empty">没有有效行情，请检查 GitHub Actions 日志。</div>';
+    $("signalList").innerHTML =
+      '<div class="empty">暂无有效信号。</div>';
+    return;
+  }
+
+  $("rankTable").innerHTML =
+    '<div style="overflow-x:auto"><table><thead><tr>' +
+    '<th>排名 / ETF</th><th>评分</th><th>5日</th><th>20日</th><th>买入建议</th>' +
+    '</tr></thead><tbody>' +
+
+    arr.map((item, index) => {
+      const info = getInfo(item);
+      const advice = getAdvice(item);
+      const score = num(item.score);
+
+      return `<tr>
+        <td>
+          <div class="etf-name">${index + 1}. ${esc(info.name)}</div>
+          <div class="etf-code">${esc(item.code)} · ${price(item.close)}</div>
+          <div class="etf-category">${esc(info.category)}</div>
+        </td>
+        <td class="score">${score === null ? "--" : score.toFixed(2)}</td>
+        <td class="${pctClass(item.return_5d_pct ?? item.ret5)}">
+          ${pct(item.return_5d_pct ?? item.ret5)}
+        </td>
+        <td class="${pctClass(item.return_20d_pct ?? item.ret20)}">
+          ${pct(item.return_20d_pct ?? item.ret20)}
+        </td>
+        <td><span class="signal ${advice.cls} advice">${advice.text}</span></td>
+      </tr>`;
+    }).join("") +
+
+    "</tbody></table></div>" +
+    '<p class="chart-note">按后端评分排序。买入建议为规则筛选，不代表预测收益或保证买入时机。</p>';
+
+  const sorted = arr.slice().sort((a, b) => {
+    const priority = {
+      "可以考虑买入": 0,
+      "观察，等待确认": 1,
+      "暂不买入": 2
+    };
+    const aa = getAdvice(a);
+    const bb = getAdvice(b);
+    return priority[aa.text] - priority[bb.text] ||
+      (num(b.score) ?? -Infinity) - (num(a.score) ?? -Infinity);
+  });
+
+  $("signalList").innerHTML = sorted.slice(0, 15).map((item, index) => {
+    const info = getInfo(item);
+    const advice = getAdvice(item);
+
+    return `<div style="padding:12px 0;border-bottom:1px solid #26364d">
+      <div class="row">
+        <b>${index + 1}. ${esc(info.name)}</b>
+        <span class="signal ${advice.cls}">${advice.text}</span>
+      </div>
+      <div class="etf-category">${esc(item.code)} · ${esc(info.category)} · ${price(item.close)}</div>
+      <div class="kpi" style="margin-top:9px">
+        <div class="kpi-item">
+          <div class="metric-label">综合评分</div>
+          <div class="kpi-value">${fmt(item.score)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日涨幅</div>
+          <div class="kpi-value ${pctClass(item.return_20d_pct)}">${pct(item.return_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">20日回撤</div>
+          <div class="kpi-value ${pctClass(item.drawdown_20d_pct)}">${pct(item.drawdown_20d_pct)}</div>
+        </div>
+        <div class="kpi-item">
+          <div class="metric-label">年化波动</div>
+          <div class="kpi-value">${pct(item.annualized_volatility_pct)}</div>
+        </div>
+      </div>
+      <div class="small muted" style="margin-top:8px">${advice.reason}</div>
+    </div>`;
+  }).join("");
+}
+
+let trades = [];
+try {
+  trades = JSON.parse(localStorage.getItem("etf_trades") || "[]");
+  if (!Array.isArray(trades)) trades = [];
+} catch {
+  trades = [];
+}
+
+function showTradeForm() {
+  $("tradeForm").classList.remove("hidden");
+  $("tradeDate").value = new Date().toLocaleDateString("en-CA");
+}
+function hideTradeForm() {
+  $("tradeForm").classList.add("hidden");
+}
+
+function saveTrade() {
+  const trade = {
+    name: $("tradeName").value.trim(),
+    code: $("tradeCode").value.trim(),
+    side: $("tradeSide").value,
+    price: Number($("tradePrice").value),
+    qty: Number($("tradeQty").value),
+    date: $("tradeDate").value
+  };
+
+  if (!trade.name || !/^\d{6}$/.test(trade.code) ||
+      !(trade.price > 0) || !(trade.qty > 0) || !trade.date) {
+    alert("请完整填写名称、6位代码、有效价格、数量和日期。");
+    return;
+  }
+
+  trades.push(trade);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  hideTradeForm();
+  renderTrades();
+
+  ["tradeName", "tradeCode", "tradePrice", "tradeQty"].forEach(id => {
+    $(id).value = "";
+  });
+}
+
+function renderTrades() {
+  $("tradeCount").textContent = trades.length;
+  $("holdingCount").textContent = new Set(trades.map(t => t.code)).size;
+
+  $("holdings").innerHTML = trades.length
+    ? trades.slice().reverse().map((t, reverseIndex) => {
+        const originalIndex = trades.length - 1 - reverseIndex;
+        return `<div style="padding:10px 0;border-bottom:1px solid #26364d">
+          <div class="row">
+            <b>${esc(t.name)} <span class="muted">${esc(t.code)}</span></b>
+            <span class="${t.side === "BUY" ? "positive" : "negative"}">
+              ${t.side === "BUY" ? "买入" : "卖出"}
+            </span>
+          </div>
+          <div class="small muted">${esc(t.date)} · ${t.qty}份 × ${price(t.price)}</div>
+          <div class="actions">
+            <button class="secondary" onclick="deleteTrade(${originalIndex})">删除记录</button>
+          </div>
+        </div>`;
+      }).join("")
+    : '<div class="empty">还没有记录成交。</div>';
+}
+
+function deleteTrade(index) {
+  if (!confirm("确定删除这条本地模拟成交记录吗？")) return;
+  trades.splice(index, 1);
+  localStorage.setItem("etf_trades", JSON.stringify(trades));
+  renderTrades();
+}
+
+function saveSettings() {
+  localStorage.setItem("etf_codes_local", $("codes").value);
+  alert("已保存到本机。云端候选池仍需修改 config/watchlist.txt。");
+}
+
+function exportData() {
+  const data = {
+    trades,
+    codes: $("codes").value,
+    exportedAt: new Date().toISOString()
+  };
+
+  const url = URL.createObjectURL(
+    new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json"
+    })
+  );
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "etf-elite-records.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+$("codes").value = localStorage.getItem("etf_codes_local") || "";
+renderTrades();
+loadResults();
+</script>
+</body>
+</html>
