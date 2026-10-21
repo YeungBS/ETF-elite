@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="ETF菁英赛量化辅助工具">
+<link rel="manifest" href="manifest.json">
+<title>ETF Elite｜菁英交易助手</title>
+<style>
+:root{--bg:#0b1220;--panel:#131e30;--panel2:#19263a;--text:#edf3ff;--muted:#8ea0bb;--blue:#5aa7ff;--green:#39d9a3;--red:#ff7285;--line:#26364d;--yellow:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:84px}
+header{padding:22px 18px 16px;background:linear-gradient(135deg,#172d4a,#101827);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}
+.brand{font-size:12px;letter-spacing:2px;color:var(--blue);font-weight:800}.title{font-size:24px;font-weight:800;margin-top:3px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.wrap{padding:14px;max-width:720px;margin:auto}.notice{border:1px solid #65512a;background:#302919;color:#ffe2a1;padding:11px 12px;border-radius:12px;font-size:12px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}.metric-label{font-size:12px;color:var(--muted)}.metric{font-size:23px;font-weight:800;margin-top:4px}.positive{color:var(--green)}.negative{color:var(--red)}.section-title{font-size:16px;font-weight:800;margin:20px 2px 10px;display:flex;justify-content:space-between;align-items:center}.tag{font-size:11px;padding:3px 7px;border-radius:8px;background:#203752;color:#9dccff}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#101827f2;backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:9}.tabs button{border:0;background:none;color:var(--muted);font-size:11px;padding:4px 8px}.tabs button.active{color:var(--blue)}.tabs b{display:block;font-size:19px;font-weight:500}
+button,.btn{cursor:pointer}.primary{background:var(--blue);color:#07111e;border:0;border-radius:11px;padding:11px 14px;font-weight:800}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font-weight:700}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:10px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}.score{font-weight:800;color:var(--yellow)}.muted{color:var(--muted)}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.pill{padding:4px 8px;border-radius:8px;background:#24344b;font-size:11px;white-space:nowrap}.hidden{display:none!important}
+label{font-size:12px;color:var(--muted);display:block;margin:10px 0 5px}input,select,textarea{width:100%;background:#0c1524;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:10px;font:inherit}textarea{min-height:90px}.small{font-size:12px}.list-item{padding:12px 0;border-bottom:1px solid var(--line)}.empty{color:var(--muted);text-align:center;padding:22px 5px}
+</style>
+</head>
+<body>
+<header><div class="brand">ETF ELITE · PAPER TRADING</div><div class="title">菁英交易助手</div><div class="sub" id="today">移动端策略面板 · 初始化版本</div></header>
+<main class="wrap">
+<section id="page-home">
+<div class="notice">原型提示：当前版本不连接实时行情，也不会下单。演示数据仅用于展示界面，不能作为真实交易依据。接入可靠行情源后才会生成真实评分。</div>
+<div class="grid">
+<div class="card"><div class="metric-label">比赛资金（模拟）</div><div class="metric">¥1,000,000</div><div class="small muted">按比赛规则初始值展示，可在设置中调整</div></div>
+<div class="card"><div class="metric-label">当前组合收益</div><div class="metric">—</div><div class="small muted">录入真实模拟成交后计算</div></div>
+<div class="card"><div class="metric-label">策略状态</div><div class="metric" style="font-size:18px">等待行情接入</div><div class="small muted">未生成有效买卖信号</div></div>
+<div class="card"><div class="metric-label">风险模式</div><div class="metric" style="font-size:18px">趋势轮动</div><div class="small muted">先评估趋势，再考虑入场</div></div>
+</div>
+<div class="section-title">今日市场观察 <span class="tag">需接入行情</span></div>
+<div class="card"><div class="row"><b>宽基指数</b><span class="pill">等待数据</span></div><p class="small muted">沪深300 / 中证A500 / 创业板指 / 科创50</p><div class="row"><b>行业强弱</b><span class="pill">等待数据</span></div><p class="small muted">半导体、通信、算力、军工、有色、电池等</p></div>
+<div class="section-title">候选 ETF 排名 <span class="tag">示例布局</span></div>
+<div class="card"><table><thead><tr><th>ETF</th><th>代码</th><th>评分</th><th>状态</th></tr></thead><tbody><tr><td>真实数据待接入</td><td>——</td><td class="score">—</td><td>不产生信号</td></tr></tbody></table><p class="small muted">接入行情数据后，按趋势、动量、相对强度、成交量、回撤风险综合排序。</p></div>
+</section>
+<section id="page-signals" class="hidden">
+<div class="section-title">交易信号</div><div class="notice">没有实时行情和策略计算结果前，不显示虚假的“买入/卖出”信号。</div>
+<div class="card"><div class="empty">目前没有已验证的交易信号。接入行情后，此处将显示触发条件、信号时间、风险提示和失效条件。</div></div>
+</section>
+<section id="page-portfolio" class="hidden">
+<div class="section-title">模拟持仓 <button class="primary" onclick="showTradeForm()">＋ 记录成交</button></div>
+<div class="card"><div class="grid"><div><div class="metric-label">持仓数量</div><div class="metric" id="holdingCount">0</div></div><div><div class="metric-label">已记录成交</div><div class="metric" id="tradeCount">0</div></div></div><div id="holdings"><div class="empty">还没有记录持仓。此处仅记录你在比赛平台实际完成的模拟成交。</div></div></div>
+<div class="card hidden" id="tradeForm"><b>记录一笔成交</b><label>ETF 名称</label><input id="tradeName" placeholder="例如：沪深300ETF"><label>ETF 代码</label><input id="tradeCode" placeholder="例如：510300"><div class="grid"><div><label>方向</label><select id="tradeSide"><option value="BUY">买入</option><option value="SELL">卖出</option></select></div><div><label>成交价格（元）</label><input id="tradePrice" type="number" step="0.001" placeholder="1.000"></div></div><div class="grid"><div><label>成交数量（份）</label><input id="tradeQty" type="number" step="100" placeholder="1000"></div><div><label>日期</label><input id="tradeDate" type="date"></div></div><div class="actions"><button class="primary" onclick="saveTrade()">保存记录</button><button class="secondary" onclick="hideTradeForm()">取消</button></div></div>
+</section>
+<section id="page-settings" class="hidden">
+<div class="section-title">设置与数据</div>
+<div class="card"><b>比赛参数</b><label>初始模拟资金（元）</label><input id="capital" type="number" value="1000000"><label>候选 ETF 代码（每行一个，后续用于行情筛选）</label><textarea id="codes" placeholder="510300&#10;510500&#10;588000&#10;159915"></textarea><div class="actions"><button class="primary" onclick="saveSettings()">保存设置</button><button class="secondary" onclick="exportData()">导出记录 JSON</button></div><p class="small muted">候选代码只是输入示例；请以比赛实际可交易清单为准。</p></div>
+<div class="card"><b>下一阶段接入项</b><ul class="small muted"><li>可靠 ETF 日线/实时行情 API</li><li>云端定时任务与数据缓存</li><li>策略回测、最大回撤和手续费模型</li><li>推送提醒（需配置推送服务）</li><li>比赛平台支持的交易接口（若存在）</li></ul></div>
+</section>
+</main>
+<nav class="tabs"><button class="active" data-page="home"><b>⌂</b>首页</button><button data-page="signals"><b>⌁</b>信号</button><button data-page="portfolio"><b>▤</b>持仓</button><button data-page="settings"><b>⚙</b>设置</button></nav>
+<script>
+const $=id=>document.getElementById(id);
+$('today').textContent=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'})+' · 手机端策略面板';
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');['home','signals','portfolio','settings'].forEach(p=>$('page-'+p).classList.toggle('hidden',p!==b.dataset.page));}));
+let trades=JSON.parse(localStorage.getItem('etf_trades')||'[]');
+function showTradeForm(){$('tradeForm').classList.remove('hidden');$('tradeDate').value=new Date().toISOString().slice(0,10)}
+function hideTradeForm(){$('tradeForm').classList.add('hidden')}
+function saveTrade(){const t={name:$('tradeName').value.trim(),code:$('tradeCode').value.trim(),side:$('tradeSide').value,price:Number($('tradePrice').value),qty:Number($('tradeQty').value),date:$('tradeDate').value};if(!t.name||!t.code||!(t.price>0)||!(t.qty>0)||!t.date){alert('请完整填写名称、代码、价格、数量和日期');return}trades.push(t);localStorage.setItem('etf_trades',JSON.stringify(trades));hideTradeForm();renderTrades();['tradeName','tradeCode','tradePrice','tradeQty'].forEach(id=>$(id).value='')}
+function renderTrades(){$('tradeCount').textContent=trades.length;const codes=new Set(trades.filter(t=>t.side==='BUY').map(t=>t.code));$('holdingCount').textContent=codes.size;const el=$('holdings');if(!trades.length){el.innerHTML='<div class="empty">还没有记录持仓。</div>';return}el.innerHTML=trades.slice().reverse().map(t=>`<div class="list-item"><div class="row"><b>${esc(t.name)} <span class="muted">${esc(t.code)}</span></b><span class="${t.side==='BUY'?'positive':'negative'}">${t.side==='BUY'?'买入':'卖出'}</span></div><div class="small muted">${esc(t.date)} · ${t.qty} 份 × ¥${t.price}</div></div>`).join('')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function saveSettings(){localStorage.setItem('etf_capital',$('capital').value);localStorage.setItem('etf_codes',$('codes').value);alert('已保存在当前手机浏览器。注意：本地保存不会自动同步到云端。')}
+function exportData(){const data={trades,capital:$('capital').value,codes:$('codes').value,exportedAt:new Date().toISOString()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='etf-elite-records.json';a.click();URL.revokeObjectURL(a.href)}
+$('capital').value=localStorage.getItem('etf_capital')||'1000000';$('codes').value=localStorage.getItem('etf_codes')||'';renderTrades();
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
