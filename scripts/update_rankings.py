@@ -117,12 +117,26 @@ def score_history(code, rows):
         + drawdown * 0.20
     )
 
-    if last > ma20 and ma20 > ma60:
-        signal = "趋势偏强"
-    elif last < ma20 and ma20 < ma60:
-        signal = "趋势偏弱"
-    else:
-        signal = "震荡观察"
+    if (
+    last > ma20
+    and ma20 > ma60
+    and r20 is not None
+    and r20 > 0
+    and r5 is not None
+    and r5 >= 0
+):
+    signal = "可以考虑买入"
+
+elif (
+    last < ma20
+    and ma20 < ma60
+) or (
+    r20 is not None and r20 <= -8
+):
+    signal = "暂不买入"
+
+else:
+    signal = "观察，等待确认"
 
     return {
         "code": code,
